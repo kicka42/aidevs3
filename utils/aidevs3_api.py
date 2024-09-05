@@ -29,7 +29,7 @@ def send_answer(task, data, print_response=False):
     
     return response.json()
 
-def connect_to_openai(prompt, model="text-davinci-003"):
+def connect_to_openai(prompt, model="gpt-4o"):
     openai.api_key = openai_api_key
     response = openai.Completion.create(
         engine=model,

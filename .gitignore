@@ -3,3 +3,7 @@ utils/__pycache__
 venv
 .DS_Store
 .aider*
+.aidevs-agent-cracker
+.cursorrules
+lessons/
+AI_devs_teczka.pdf

@@ -1,28 +1,10 @@
 import requests
 from time import sleep
 import re
-import openai
-from openai.types.chat import ChatCompletionMessage, ChatCompletionChunk
-from typing import List, Dict
 from urllib.parse import urlencode
+from openai import OpenAI
 
-
-class OpenAIService:
-    def __init__(self):
-        self.client = openai.OpenAI()
-
-    def completion(self, messages: List[Dict[str, str]], model: str, stream: bool = False):
-        try:
-            response = self.client.chat.completions.create(
-                model=model,
-                messages=messages,
-                stream=stream
-            )
-            return response
-        except Exception as e:
-            raise Exception(f"OpenAI API error: {str(e)}")
-
-openai_service = OpenAIService()
+client = OpenAI()
 
 def get_question(url):
     try:
@@ -38,16 +20,14 @@ def get_question(url):
         print(f"Error fetching question: {e}")
         return None
     
-def send_question(question: str) -> str:
+def send_question(question):
     try:
-        messages = [
-            {"role": "system", "content": "You are a helpful assistant. Provide only the direct answer without any additional text or explanations. The answer is ALWAYS a number."},
-            {"role": "user", "content": question}
-        ]
-        
-        response = openai_service.completion(
-            messages=messages,
-            model="gpt-4"
+        response = client.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant. Provide only the direct answer without any additional text or explanations. The answer is ALWAYS a number."},
+                {"role": "user", "content": question}
+            ]
         )
         
         # Return just the answer text
@@ -57,8 +37,7 @@ def send_question(question: str) -> str:
         print(f"Error getting GPT-4 response: {e}")
         return None
 
-def submit_form(url: str, login: str, password: str, answer: str) -> tuple[bool, str]:
-    """Submit the form with login credentials and answer"""
+def submit_form(url, login, password, answer):
     try:
         data = urlencode({
             "username": login,

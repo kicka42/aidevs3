@@ -1,4 +1,5 @@
 import requests
+import os
 from openai import OpenAI
 
 def send_verification(data):

@@ -2,7 +2,7 @@ import requests
 from openai import OpenAI
 
 def send_verification(data):
-    url = "https://xyz.ag3nts.org/verify"
+    url = os.getenv("XYZ") + "/verify"
 
     try:
         response = requests.post(url, json=data)

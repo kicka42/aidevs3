@@ -11,7 +11,7 @@ def download_data(url):
     return response.text
 
 task = "POLIGON"
-url = "https://poligon.aidevs.pl/dane.txt"
+url = os.getenv("URL_POLIGON")
 
 data = download_data(url)
 data = data.split("\n")

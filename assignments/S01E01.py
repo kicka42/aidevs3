@@ -1,3 +1,4 @@
+import os
 import requests
 from time import sleep
 import re
@@ -69,9 +70,9 @@ def submit_form(url, login, password, answer):
         return False, f"Error submitting form: {str(e)}"
 
 def main():
-    url = "https://xyz.ag3nts.org/"
-    login = "tester"
-    password = "574e112a"
+    url = os.getenv("XYZ")
+    login = os.getenv("LOGIN")
+    password = os.getenv("PASSWORD")
     
     while True:
         try:

@@ -140,3 +140,36 @@ if __name__ == "__main__":
             # Send the report with task name and AI response
             report_response = send_report("CENZURA", ai_response)
             print(f"Report Response: {report_response}")
+
+# Prompt for llama-32-3b-instruct
+# Replace all personal information with the word CENZURA while maintaining the exact original text structure, punctuation, and spacing. Return only the censored text without any additional explanations or formatting.
+#
+# <rules>
+# 1. Replace with CENZURA:
+#    - First and last names (as a single unit)
+#    - City names 
+#    - Street names with numbers (as a single unit)
+#    - Age numbers
+#
+# 2. Keep unchanged:
+#    - All periods, commas, and spaces
+#    - All descriptive text and phrases
+#    - Words that are not personal data
+#    - Original sentence structure
+#
+# 3. Important:
+#    - Always use CENZURA in its base form (never CENZURY, CENZURZE, etc.)
+#    - The word CENZURA must stay exactly the same regardless of the grammatical case in the original text
+# </rules>
+#
+# <example 1>
+# Input: Dane personalne podejrzanego: Wojciech Górski. Przebywa w Lublinie, ul. Akacjowa 7. Wiek: 27 lat.
+# Output: Dane personalne podejrzanego: CENZURA. Przebywa w CENZURA, ul. CENZURA. Wiek: CENZURA lat.
+# </example 1>
+#
+# <example 2>
+# Input: Nazywam się James Bond. Mieszkam w Warszawie na ulicy Pięknej 5. Mam 28 lat.
+# Output: Nazywam się CENZURA. Mieszkam w CENZURA na ulicy CENZURA. Mam CENZURA lat.
+# </example 2>
+#
+# Replace all personal information with the word CENZURA while maintaining the exact original text structure, punctuation, and spacing. Return only the censored text without any additional explanations or formatting.

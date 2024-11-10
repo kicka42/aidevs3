@@ -5,6 +5,7 @@ import asyncio
 from openai import AsyncOpenAI
 import requests
 from dotenv import load_dotenv
+import os
 
 # Load environment variables from .env file
 load_dotenv()
@@ -191,6 +192,9 @@ def send_json_to_endpoint(json_file_path: str, api_key: str) -> None:
 
 # Example usage
 if __name__ == "__main__":
+    api_key = os.getenv('AIDEVS3_API_KEY')
+    if not api_key:
+        raise ValueError("AIDEVS3_API_KEY environment variable is not set")
     
     # Initialize OpenAI client with API key from environment
     client = AsyncOpenAI()  # This will automatically use OPENAI_API_KEY from environment
@@ -202,4 +206,4 @@ if __name__ == "__main__":
     asyncio.run(process_test_questions('json.txt', client))
     
     # Finally, send the corrected JSON to the endpoint
-    send_json_to_endpoint('json.txt', AIDEVS3_API_KEY)
+    send_json_to_endpoint('json.txt', api_key)

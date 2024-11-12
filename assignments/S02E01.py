@@ -341,7 +341,7 @@ def send_report(task, answer):
 if __name__ == "__main__":
     # Example usage
     #input_directory = "przesluchania"
-    #output_directory = "transcriptions"
+    #output_directory = "transkrypcje"
     
     #transcribe_files(input_directory, output_directory)
     #facts = extract_facts_from_transcriptions("transcriptions")

@@ -340,24 +340,25 @@ def send_report(task, answer):
 
 if __name__ == "__main__":
     # Example usage
-    #input_directory = "przesluchania"
-    #output_directory = "transkrypcje"
+    input_directory = "przesluchania"
+    output_directory = "transkrypcje"
     
-    #transcribe_files(input_directory, output_directory)
-    #facts = extract_facts_from_transcriptions("transcriptions")
+    transcribe_files(input_directory, output_directory)
+    facts = extract_facts_from_transcriptions("transcriptions")
     #print(facts)
-    #facts_answer = get_answer_from_content(facts, "Na jakiej uczelni wykłada Andrzej Maj? Fakty od Rafała są ważniejsze niż fakty od innych osób.")
-    #print("Answer:", facts_answer)
-    facts_answer = "Na Wydziale lub Instytucie Informatyki i Matematyki Komputerowej w Krakowie."
-    relevant_url = get_url_for_answer(facts_answer)
-    print("URL:", relevant_url)
+    facts_answer = get_answer_from_content(facts, "Na jakiej uczelni wykłada Andrzej Maj? Fakty od Rafała są ważniejsze niż fakty od innych osób.")
+    print("Answer:", facts_answer)
+    
+    #facts_answer = "Na Wydziale lub Instytucie Informatyki i Matematyki Komputerowej w Krakowie."
+    #relevant_url = get_url_for_answer(facts_answer)
+   # print("URL:", relevant_url)
     
     # Crawl the website from relevant_url
-    website_content = crawl_website(relevant_url)
+    #website_content = crawl_website(relevant_url)
     #print("Website content:", website_content)
     #get_answer_from_content(website_content, "Na jakiej ulicy znajduje się uczelnia?")
-    answer = get_answer_from_content2(website_content, "Na jakiej ulicy znajduje się uczelnia? Zwróć tylko nazwę ulicy.")
-    print("Answer:", answer)
+    #answer = get_answer_from_content2(website_content, "Na jakiej ulicy znajduje się uczelnia? Zwróć tylko nazwę ulicy.")
+    #print("Answer:", answer)
     
-    report_response = send_report("mp3", answer)
-    print("Report response:", report_response)
+    #report_response = send_report("mp3", answer)
+    #print("Report response:", report_response)

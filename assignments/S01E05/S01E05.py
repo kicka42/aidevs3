@@ -1,9 +1,12 @@
 import os
+import sys
 import json
 import requests
 from urllib.request import urlopen, Request
 from urllib.error import URLError, HTTPError
 from dotenv import load_dotenv
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from assignments.utils.aidevs3_utils import send_report
 
 load_dotenv()
 
@@ -75,57 +78,7 @@ def send_to_ai(content):
         print(f"Error: {e}")
         return None
 
-def send_report(task, answer):
-    try:
-        url = os.getenv('URL_REPORT')
-        api_key = os.getenv('AIDEVS3_API_KEY')
-        
-        if not url or not api_key:
-            raise ValueError("URL_REPORT or AIDEVS3_API_KEY environment variable is not set")
-        
-        # Prepare the JSON data
-        data = {
-            "task": task,
-            "apikey": api_key,
-            "answer": answer
-        }
-        
-        # Display JSON data before sending
-        print("\nSending JSON data:")
-        print(json.dumps(data, indent=2))
-
-        # Convert data to JSON string
-        json_data = json.dumps(data).encode('utf-8')
-        
-        # Prepare headers
-        headers = {
-            'Content-Type': 'application/json',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-        }
-        
-        # Create request object
-        request = Request(
-            url,
-            data=json_data,
-            headers=headers,
-            method='POST'
-        )
-        
-        # Send request and get response
-        with urlopen(request) as response:
-            return response.read().decode('utf-8')
-            
-    except HTTPError as e:
-        print(f"HTTP Error: {e.code} - {e.reason}")
-        return None
-    except URLError as e:
-        print(f"URL Error: {e.reason}")
-        return None
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
-
-if __name__ == "__main__":
+def main():
     URL_CENZURA = os.getenv('URL_CENZURA')
     
     if not URL_CENZURA:
@@ -140,6 +93,9 @@ if __name__ == "__main__":
             # Send the report with task name and AI response
             report_response = send_report("CENZURA", ai_response)
             print(f"Report Response: {report_response}")
+
+if __name__ == "__main__":
+    main()
 
 # Prompt for llama-32-3b-instruct
 # Replace all personal information with the word CENZURA while maintaining the exact original text structure, punctuation, and spacing. Return only the censored text without any additional explanations or formatting.

@@ -4,17 +4,33 @@ import requests
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from utils.aidevs3_api import send_answer
+def send_answer_poligon(task, answer, print_response=False):
+    json = {
+        "task": task,
+        "apikey": os.getenv("AIDEVS3_API_KEY"),
+        "answer": answer
+    }
+
+    response = requests.post(os.getenv("POLIGON"), json=json)
+    
+    if print_response:
+        print(response.json())
+    
+    return response.json()
 
 def download_data(url):
     response = requests.get(url)
     return response.text
 
-task = "POLIGON"
-url = os.getenv("URL_POLIGON")
+def main():
+    task = "POLIGON"
+    url = os.getenv("URL_POLIGON")
 
-data = download_data(url)
-data = data.split("\n")
-data = data[:-1]
+    data = download_data(url)
+    data = data.split("\n")
+    data = data[:-1]
 
-response = send_answer(task, data, print_response=True)
+    response = send_answer_poligon(task, data, print_response=True)
+
+if __name__ == "__main__":
+    main()

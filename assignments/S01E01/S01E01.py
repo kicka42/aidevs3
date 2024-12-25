@@ -2,12 +2,12 @@ import os
 import requests
 from time import sleep
 import re
+import sys
 from urllib.parse import urlencode
-from openai import OpenAI
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from assignments.utils.openai_api import ask_gpt
 
-client = OpenAI()
-
-def get_question(url):
+def get_question_xyz(url):
     try:
         response = requests.get(url)
         if response.status_code == 200:
@@ -21,24 +21,7 @@ def get_question(url):
         print(f"Error fetching question: {e}")
         return None
     
-def send_question(question):
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant. Provide only the direct answer without any additional text or explanations. The answer is ALWAYS a number."},
-                {"role": "user", "content": question}
-            ]
-        )
-        
-        # Return just the answer text
-        return response.choices[0].message.content.strip()
-        
-    except Exception as e:
-        print(f"Error getting GPT-4 response: {e}")
-        return None
-
-def submit_form(url, login, password, answer):
+def submit_form_xyz(url, login, password, answer):
     try:
         data = urlencode({
             "username": login,
@@ -71,25 +54,26 @@ def submit_form(url, login, password, answer):
 
 def main():
     url = os.getenv("XYZ")
-    login = os.getenv("LOGIN")
-    password = os.getenv("PASSWORD")
+    login = "tester"
+    password = "574e112a"
+    prompt = "You are a helpful assistant. Provide only the direct answer without any additional text or explanations. The answer is ALWAYS a number."
     
     while True:
         try:
-            question = get_question(url)
+            question = get_question_xyz(url)
             if not question:
                 print("Failed to get question, retrying in 25 seconds...")
                 sleep(25)
                 continue
                 
-            answer = send_question(question)
+            answer = ask_gpt(prompt, question, "gpt-4")
             if not answer:
                 print("Failed to get answer, retrying in 25 seconds...")
                 sleep(25)
                 continue
             
             # Submit and print response
-            success, response = submit_form(url, login, password, answer)
+            success, response = submit_form_xyz(url, login, password, answer)
             
             print(f"Question: {question}")
             print(f"Answer: {answer}")
@@ -121,4 +105,4 @@ def main():
             sleep(25)
 
 if __name__ == "__main__":
-    main() 
+    main()

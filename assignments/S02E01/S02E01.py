@@ -1,4 +1,5 @@
 import os
+import sys
 from openai import OpenAI
 from groq import Groq
 from pathlib import Path
@@ -9,66 +10,12 @@ from anthropic import Anthropic
 import json
 from urllib.request import urlopen, Request
 from urllib.error import URLError, HTTPError
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from assignments.utils.aidevs3_utils import transcribe_files, get_answer_from_content
 import requests
 
 # Load environment variables from .env file
 load_dotenv()
-
-def transcribe_files(input_dir: str, output_dir: str):
-    """
-    Transcribe all M4A files from input directory to markdown files in output directory.
-    Skip files that have already been transcribed.
-    
-    Args:
-        input_dir (str): Directory containing M4A files
-        output_dir (str): Directory where markdown files will be saved
-    """
-    # Initialize Groq client with API key from environment variable
-    client = Groq(
-        api_key=os.environ.get("GROQ_API_KEY")
-    )
-    
-    # Create output directory if it doesn't exist
-    os.makedirs(output_dir, exist_ok=True)
-    
-    # Get all M4A files from input directory
-    input_path = Path(input_dir)
-    m4a_files = list(input_path.glob("*.m4a"))
-    
-    # Get list of already transcribed files
-    existing_transcriptions = {f.stem for f in Path(output_dir).glob("*.md")}
-    
-    for audio_file in m4a_files:
-        # Skip if transcription already exists
-        if audio_file.stem in existing_transcriptions:
-            print(f"Skipping {audio_file.name} - transcription already exists")
-            continue
-            
-        # Prepare output file path
-        output_file = Path(output_dir) / f"{audio_file.stem}.md"
-        
-        print(f"Transcribing {audio_file.name}...")
-        
-        try:
-            # Open and read the audio file
-            with open(audio_file, "rb") as file:
-                # Create transcription using Groq API
-                transcription = client.audio.transcriptions.create(
-                    file=(str(audio_file), file.read()),
-                    model="whisper-large-v3-turbo",
-                    language="pl",  # Assuming files are in Polish
-                    response_format="text"
-                )
-            
-            # Write transcription to markdown file
-            with open(output_file, "w", encoding="utf-8") as f:
-                f.write(f"# Transcription of {audio_file.name}\n\n")
-                f.write(transcription)  # Use transcription directly as it's already a string
-                
-            print(f"Successfully transcribed to {output_file}")
-            
-        except Exception as e:
-            print(f"Error transcribing {audio_file.name}: {str(e)}")
 
 def extract_facts_from_transcriptions(transcriptions_dir: str) -> str:
     """
@@ -126,49 +73,6 @@ Extract only the key facts and present them in a clear, bullet-point format in P
     
     # Combine all facts into a single string
     return "\n".join(all_facts)
-
-def get_answer_from_content(content: str, question: str) -> str:
-    """
-    Get an answer to a question using GPT-4 based on provided content.
-    
-    Args:
-        content (str): Text containing content to analyze
-        question (str): Question to answer
-        
-    Returns:
-        str: Answer from GPT-4
-    """
-    # Initialize OpenAI client
-    client = OpenAI(
-        api_key=os.environ.get("OPENAI_API_KEY")
-    )
-    
-    # Create prompt combining content and question
-    prompt = f"""Based on the following content, please answer the question. 
-    Provide only the direct answer in the same language as the question without any additional explanations or context.
-
-<rules>
-1. while answering, use only facts provided in <content> section
-</rules>
-
-<content>
-{content}
-</content>
-
-<question>
-{question}
-</question>"""
-    # Make API call to GPT-4
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[
-            {"role": "system", "content": "You are a precise answering assistant. Provide direct, concise answers based only on the given content."},
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.1  # Low temperature for more focused answers
-    )
-    
-    return response.choices[0].message.content.strip()
 
 def get_url_for_answer(facts_answer: str) -> str:
     """
@@ -340,8 +244,8 @@ def send_report(task, answer):
 
 if __name__ == "__main__":
     # Example usage
-    input_directory = "przesluchania"
-    output_directory = "transkrypcje"
+    input_directory = "resources/przesluchania"
+    output_directory = "resources/transkrypcje"
     
     transcribe_files(input_directory, output_directory)
     facts = extract_facts_from_transcriptions("transcriptions")

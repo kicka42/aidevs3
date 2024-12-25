@@ -6,6 +6,7 @@ import json
 from urllib.request import urlopen, Request
 from urllib.error import URLError, HTTPError
 import requests
+from assignments.utils.aidevs3_utils import send_report
 
 load_dotenv()
 
@@ -61,56 +62,6 @@ Return ONLY the final prompt text with no additional commentary.
     )
     
     return response.content[0].text
-
-def send_report(task, answer):
-    try:
-        url = os.getenv('URL_REPORT')
-        api_key = os.getenv('AIDEVS3_API_KEY')
-        
-        if not url or not api_key:
-            raise ValueError("URL_REPORT or AIDEVS3_API_KEY environment variable is not set")
-        
-        # Prepare the JSON data
-        data = {
-            "task": task,
-            "apikey": api_key,
-            "answer": answer
-        }
-        
-        # Display JSON data before sending
-        print("\nSending JSON data:")
-        print(json.dumps(data, indent=2))
-
-        # Convert data to JSON string
-        json_data = json.dumps(data).encode('utf-8')
-        
-        # Prepare headers
-        headers = {
-            'Content-Type': 'application/json',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-        }
-        
-        # Create request object
-        request = Request(
-            url,
-            data=json_data,
-            headers=headers,
-            method='POST'
-        )
-        
-        # Send request and get response
-        with urlopen(request) as response:
-            return response.read().decode('utf-8')
-            
-    except HTTPError as e:
-        print(f"HTTP Error: {e.code} - {e.reason}")
-        return None
-    except URLError as e:
-        print(f"URL Error: {e.reason}")
-        return None
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
 
 def request_anthropic(content):
     client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))

@@ -4,11 +4,11 @@ import base64
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from assignments.utils.aidevs3_utils import request_anthropic
 
-# Load environment variables from .env file
 load_dotenv()
 
-def analyze_map_images(map_directory: str, api_key: str) -> list:
+def analyze_map_images(map_directory) -> list:
     """
     Analyze historical map images using Anthropic's Claude API.
     
@@ -124,51 +124,25 @@ Be explicit about how each observed detail supports your conclusion about the ci
     
     return results
 
-def request_anthropic(content: str, question: str) -> str:
-    """
-    Get a direct answer to a question using Claude 3.5 Sonnet based on provided content.
-    
-    Args:
-        content (str): Text containing content to analyze
-        question (str): Question to answer
-        
-    Returns:
-        str: Direct answer from Claude 3.5 Sonnet
-    """
-    client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
-    
-    prompt = f"""<context>
-{content}
-</context>
-
-<question>
-{question}
-</question>
-
-<instructions>
-1. Answer ONLY using facts from the provided context
-2. Provide ONLY the direct answer without any explanations
-3. If the answer cannot be found in the context, respond with "Nie znaleziono odpowiedzi w tekście"
-4. Use the same language as the question
-</instructions>"""
-
-    response = client.messages.create(
-        model="claude-3-5-sonnet-latest",
-        max_tokens=100,
-        temperature=0.1,
-        messages=[{
-            "role": "user",
-            "content": prompt
-        }]
-    )
-    
-    return response.content[0].text
-
-if __name__ == "__main__":
-    api_key = os.getenv("ANTHROPIC_API_KEY")
+def main():
     map_directory = "resources/map/"
+
+    prompt = """<context>
+    {content}
+    </context>
+
+    <question>
+    {question}
+    </question>
+
+    <instructions>
+    1. Answer ONLY using facts from the provided context
+    2. Provide ONLY the direct answer without any explanations
+    3. If the answer cannot be found in the context, respond with "Nie znaleziono odpowiedzi w tekście"
+    4. Use the same language as the question
+    </instructions>"""
     
-    analyses = analyze_map_images(map_directory, api_key)
+    analyses = analyze_map_images(map_directory)
     
     # Convert analyses to a single string
     analyses_text = "\n\n".join([f"Analysis for {a['image_path']}:\n{a['analysis']}" for a in analyses])
@@ -176,7 +150,8 @@ if __name__ == "__main__":
     # Ask which Polish city is shown in most maps
     answer = request_anthropic(
         content=analyses_text,
-        question="które polskie miasto przedstawia większośc tych map?"
+        question="które polskie miasto przedstawia większośc tych map?",
+        prompt=prompt
     )
     
     # Print results
@@ -187,3 +162,6 @@ if __name__ == "__main__":
         
     print("\n=== City Identification ===")
     print(answer)
+
+if __name__ == "__main__":
+    main()

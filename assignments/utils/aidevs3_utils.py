@@ -488,3 +488,56 @@ filename: {txt_file}
         created_files.append(md_path)
         
     return created_files
+
+#
+def connect_to_apidb(task, query):
+    """
+    Connect to the API using credentials from .env file
+    
+    Args:
+        task (str): Task type to be performed
+        query (str): SQL query to be executed
+        
+    Returns:
+        str: Table structure if 'show create table' query, otherwise full response
+    """
+    # Load environment variables
+    load_dotenv()
+    
+    api_key = os.getenv('AIDEVS3_API_KEY')
+    apidb_url = os.getenv('APIDB_URL')
+
+    print(f"Connecting to API: {apidb_url}")
+    
+    # Prepare request payload
+    payload = {
+        "task": task,
+        "apikey": api_key,
+        "query": query
+    }
+    
+    # Convert payload to JSON string
+    json_payload = json.dumps(payload)
+    
+    try:
+        response = requests.post(apidb_url, data=json_payload)
+        response.raise_for_status()
+        
+        # Print response headers and body for debugging
+        print("\nResponse Headers:")
+        for header, value in response.headers.items():
+            print(f"{header}: {value}")
+        print(f"\nResponse Body:\n{response.text}")
+        
+        # Parse the response
+        json_response = response.json()
+        
+        # If it's a 'show create table' query, extract just the table structure
+        if query.lower().startswith('show create table'):
+            return json_response['reply'][0]['Create Table']
+        
+        return json_response
+        
+    except requests.exceptions.RequestException as e:
+        print(f"Error connecting to API: {e}")
+        return None
